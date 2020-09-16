@@ -30,9 +30,20 @@ jobs:
       - run:
           name: Remove examples
           command: rm -rf examples/
+      - restore_cache:
+          name: Restore node_modules cache
+          keys:
+            - yarn-packages-v1--{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-v1--{{ .Branch }}-
+            - yarn-packages-v1--
       - run:
           name: Install dependencies
-          command: yarn install --frozen-lockfile
+          command: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
+      - save_cache:
+          name: Save node_modules cache
+          key: yarn-packages-v1--{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
       - run:
           name: Bootstrap
           command: yarn bootstrap --core
